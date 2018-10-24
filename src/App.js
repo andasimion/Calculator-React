@@ -38,7 +38,6 @@ class Calculator extends Component {
       currentOperand: "0",
       currentOperation: null,
       previousOperand: null,
-      previousOperation: null,
       resetCurrentOperand: false,
     };
 
@@ -47,7 +46,6 @@ class Calculator extends Component {
   }
 
   numericKeyPressed = (label) => {
-    console.log("pressed key " + label);
     if (this.state.currentOperand === "0" && label === "0") {
         this.setState({currentOperand: "0"});
     } else if ((this.state.currentOperand === "0" || this.state.resetCurrentOperand) && label === ".") {
@@ -64,18 +62,21 @@ class Calculator extends Component {
               resetCurrentOperand: false});
     } else {
         this.setState({currentOperand: this.state.currentOperand + label});
-  };
-}
+    };
+  }
 
   operationKeyPressed = (label) => {
-    if (this.state.previousOperand !== null) {
+    if (label === "%") {
+      this.setState({currentOperand: Number.parseFloat(this.state.currentOperand) / 100});
+      this.resetModel();
+      return;
+    } if (this.state.previousOperand !== null) {
       this.equalKeyPressed();
-    };
+    } 
     this.setState({currentOperation: label,
                   previousOperand: this.state.currentOperand,
                   resetCurrentOperand: true});
   };
-
 
   cancelKeyPressed = () => {
     this.setState({
@@ -86,50 +87,34 @@ class Calculator extends Component {
     })
   };
 
+  calculate = (operand1, operator, operand2) => eval(`${operand1}${operator}${operand2}`)
+  
+ 
   equalKeyPressed = () => {
-    console.log("pressed equa l key ");
-    switch (this.state.currentOperation) {
-      case "+":
-          this.setState({currentOperand: Number.parseFloat(this.state.previousOperand) + Number.parseFloat(this.state.currentOperand)});
-          this.resetModel();
-          break;
-      case "-":
-          this.setState({currentOperand: Number.parseFloat(this.state.previousOperand) - Number.parseFloat(this.state.currentOperand)});
-          this.resetModel();
-          break;
-      case "*":
-          this.setState({currentOperand: Number.parseFloat(this.state.previousOperand) * Number.parseFloat(this.state.currentOperand)});
-          this.resetModel();
-          break;    
-      case "/":
-          debugger;
-          if (this.state.currentOperand === "0") {
-              this.setState({currentOperand: "ERROR",
-                            currentOperation: null,
-                            resetCurrentOperand: true});
-              this.resetModel();
-          } else if (this.state.previousOperand === "0") {
-              this.setState({currentOperand: "0"});
-              this.resetModel();
-          } else {
-            console.log("testtstst")
-            debugger;
-              this.setState({currentOperand: Number.parseFloat(this.previousOperand) / Number.parseFloat(this.currentOperand)});
-              this.resetModel();
-          }
-          break;  
-      default:
-          throw "unknown operation!";
+    if (this.state.previousOperand === null && this.state.currentOperation === null) {
+      return;
+    } else if (this.state.currentOperation === "/" && this.state.currentOperand === "0") {
+        this.setState({currentOperand: "ERROR",
+                      previousOperand: null,
+                      currentOperation: null,
+                      resetCurrentOperand: true});
+    } else {
+        this.setState({currentOperand: this.calculate(Number.parseFloat(this.state.previousOperand),
+                                                      this.state.currentOperation,
+                                                      Number.parseFloat(this.state.currentOperand))});
+        this.resetModel();
     }
-  };
+  }
 
   resetModel = () => {
+    if (this.state.previousOperand === "ERROR") {
+      this.setState({currentOperand: "ERROR"});
+    };
     this.setState({
       previousOperand: null,
       currentOperation: null,
-      resetCurrentOperand: true
-    })
-  };
+      resetCurrentOperand: true});
+  }
 
   render() {
     return (
