@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import './Calculator.css';
 
 const Display = (props) => {
   return (
@@ -13,7 +13,13 @@ const NumericKey = (props)  => {
   );
 }
 
-const OperationKey = (props)  => {
+const UnaryOperationKey = (props)  => {
+  return (
+    <button className="col-lg-3" onClick={props.onClick}>{props.label}</button>
+  );
+}
+
+const BinaryOperationKey = (props)  => {
   return (
     <button className="col-lg-3" onClick={props.onClick}>{props.label}</button>
   );
@@ -39,6 +45,7 @@ class Calculator extends Component {
       currentOperation: null,
       previousOperand: null,
       resetCurrentOperand: false,
+      lastKeyPressed: null
     };
 
     this.cancelKeyPressed = this.cancelKeyPressed.bind(this);
@@ -49,72 +56,98 @@ class Calculator extends Component {
     if (this.state.currentOperand === "0" && label === "0") {
         this.setState({currentOperand: "0"});
     } else if ((this.state.currentOperand === "0" || this.state.resetCurrentOperand) && label === ".") {
-        this.setState({currentOperand: "0.",
-                      resetCurrentOperand: false});
+        this.setState({currentOperand: "0."});
     } else if (this.state.currentOperand.toString().includes('.') && label === ".") {
-        return;
+        //leave currentOperand unchanged
     } else if (this.state.currentOperand === "0" && label !== "0") {
-        this.setState({currentOperand: label,
-                      resetCurrentOperand: false});
+        this.setState({currentOperand: label});
     } else if (this.state.resetCurrentOperand) {
         this.setState({previousOperand: this.state.currentOperand,
-              currentOperand: label,
-              resetCurrentOperand: false});
+              currentOperand: label});
     } else {
         this.setState({currentOperand: this.state.currentOperand + label});
     };
-  }
-
-  operationKeyPressed = (label) => {
-    if (label === "%") {
+    this.setState({resetCurrentOperand: false,
+                   lastKeyPressed: label});
+  };
+  
+  unaryOperationKeyPressed = (label) => {
+    if (this.state.currentOperand === "ERROR") {
+    } else {
       this.setState({currentOperand: Number.parseFloat(this.state.currentOperand) / 100});
       this.resetModel();
-      return;
-    } if (this.state.previousOperand !== null) {
-      this.equalKeyPressed();
-    } 
-    this.setState({currentOperation: label,
-                  previousOperand: this.state.currentOperand,
-                  resetCurrentOperand: true});
+    };
+    this.setState({lastKeyPressed: label});
   };
 
-  cancelKeyPressed = () => {
-    this.setState({
-      currentOperand: "0",
-      currentOperation: null,
-      previousOperand: null,
-      resetCurrentOperand: false
-    })
+  binaryOperationKeyPressed = (label) => {
+    this.setState({resetCurrentOperand: true});
+    if (this.state.previousOperand === "ERROR"){
+      this.setState({currentOperand: "ERROR"});
+      this.resetModel();
+    } else if (this.state.lastKeyPressed === "=") {
+      this.setState({currentOperation: label});
+    } else if (this.state.previousOperand !== null && this.isNumericKey(this.state.lastKeyPressed)) {
+      this.equalKeyPressed();
+      this.setState({currentOperation: label});
+    } else {
+      this.setState({previousOperand: this.state.currentOperand,
+                     currentOperation: label});
+    };
+    this.setState({lastKeyPressed: label});
+  };
+
+  isNumericKey(key) {
+    const numericKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
+    return numericKeys.includes(key);
   };
 
   calculate = (operand1, operator, operand2) => eval(`${operand1}${operator}${operand2}`)
   
  
   equalKeyPressed = () => {
-    if (this.state.previousOperand === null && this.state.currentOperation === null) {
-      return;
+    if (this.state.previousOperand === "ERROR") {
+      this.setState({currentOperand: "ERROR"});
+      this.resetModel();
+    } else if (this.state.previousOperand === null && this.state.currentOperation === null) {
+      // let the currentOperand unchanged
     } else if (this.state.currentOperation === "/" && this.state.currentOperand === "0") {
         this.setState({currentOperand: "ERROR",
-                      previousOperand: null,
-                      currentOperation: null,
-                      resetCurrentOperand: true});
+                      previousOperand: null});
+        this.resetModel();
+    } else if (this.state.lastKeyPressed === "=") {
+        let temporarOperand = this.state.previousOperand;
+        this.setState({currentOperand: this.calculate(Number.parseFloat(this.state.currentOperand),
+                                       this.state.currentOperation,
+                                       Number.parseFloat(temporarOperand))});
     } else {
+        let temporarOperand = this.state.currentOperand;
         this.setState({currentOperand: this.calculate(Number.parseFloat(this.state.previousOperand),
                                                       this.state.currentOperation,
                                                       Number.parseFloat(this.state.currentOperand))});
+        this.setState({previousOperand: temporarOperand});
         this.resetModel();
-    }
-  }
+    };
+    this.setState({lastKeyPressed: "="});
+  };
 
   resetModel = () => {
-    if (this.state.previousOperand === "ERROR") {
-      this.setState({currentOperand: "ERROR"});
-    };
     this.setState({
-      previousOperand: null,
-      currentOperation: null,
-      resetCurrentOperand: true});
+      resetCurrentOperand: true,
+      lastKeyPressed: null
+    });
   }
+
+  cancelKeyPressed = () => {
+    this.setState({
+      currentOperand: "0",
+      currentOperation: null,
+      previousOperand: null,
+      resetCurrentOperand: false,
+      lastKeyPressed: null
+    })
+  };
+
 
   render() {
     return (
@@ -126,25 +159,25 @@ class Calculator extends Component {
           <NumericKey label={'7'} onClick={this.numericKeyPressed.bind(this, '7')}/>
           <NumericKey label={'8'} onClick={this.numericKeyPressed.bind(this, '8')}/>
           <NumericKey label={'9'} onClick={this.numericKeyPressed.bind(this, '9')}/>
-          <OperationKey label={'+'} onClick={this.operationKeyPressed.bind(this, '+')}/>
+          <BinaryOperationKey label={'+'} onClick={this.binaryOperationKeyPressed.bind(this, '+')}/>
         </div>
         <div>
           <NumericKey label={'4'} onClick={this.numericKeyPressed.bind(this, '4')}/>
           <NumericKey label={'5'} onClick={this.numericKeyPressed.bind(this, '5')}/>
           <NumericKey label={'6'} onClick={this.numericKeyPressed.bind(this, '6')}/>
-          <OperationKey label={'-'} onClick={this.operationKeyPressed.bind(this, '-')}/>
+          <BinaryOperationKey label={'-'} onClick={this.binaryOperationKeyPressed.bind(this, '-')}/>
         </div>
         <div>
           <NumericKey label={'1'} onClick={this.numericKeyPressed.bind(this, '1')}/>
           <NumericKey label={'2'} onClick={this.numericKeyPressed.bind(this, '2')}/>
           <NumericKey label={'3'} onClick={this.numericKeyPressed.bind(this, '3')}/>
-          <OperationKey label={'*'} onClick={this.operationKeyPressed.bind(this, '*')}/>
+          <BinaryOperationKey label={'*'} onClick={this.binaryOperationKeyPressed.bind(this, '*')}/>
         </div>
         <div>
           <NumericKey label={'.'} onClick={this.numericKeyPressed.bind(this, '.')}/>
           <NumericKey label={'0'} onClick={this.numericKeyPressed.bind(this, '0')}/>
-          <OperationKey label={'%'} onClick={this.operationKeyPressed.bind(this, '%')}/>
-          <OperationKey label={'/'} onClick={this.operationKeyPressed.bind(this, '/')}/>
+          <UnaryOperationKey label={'%'} onClick={this.unaryOperationKeyPressed.bind(this, '%')}/>
+          <BinaryOperationKey label={'/'} onClick={this.binaryOperationKeyPressed.bind(this, '/')}/>
         </div>
         <div>
           <CancelKey onClick={this.cancelKeyPressed}/>
