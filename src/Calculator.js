@@ -1,41 +1,8 @@
+
 import React, { Component } from 'react';
 import './Calculator.css';
-
-const Display = (props) => {
-  return (
-    <div className="calculator-display col-lg-12">{props.value}</div>
-  )
-}
-
-const NumericKey = (props)  => {
-  return (
-    <button className="col-lg-3" onClick={props.onClick}>{props.label}</button>
-  );
-}
-
-const UnaryOperationKey = (props)  => {
-  return (
-    <button className="col-lg-3" onClick={props.onClick}>{props.label}</button>
-  );
-}
-
-const BinaryOperationKey = (props)  => {
-  return (
-    <button className="col-lg-3" onClick={props.onClick}>{props.label}</button>
-  );
-}
-
-const CancelKey = (props) => {
-  return (
-    <button className="col-lg-6" onClick={props.onClick}>C</button>
-  );
-}
-
-const Equalkey = (props) => {
-  return (
-    <button className="col-lg-6" onClick={props.onClick}>=</button>
-  );
-}
+import { Button } from './Button';
+import { Display } from './Display';
 
 class Calculator extends Component {
   constructor(props) {
@@ -51,7 +18,7 @@ class Calculator extends Component {
     this.cancelKeyPressed = this.cancelKeyPressed.bind(this);
     this.equalKeyPressed = this.equalKeyPressed.bind(this);
   }
-
+  
   numericKeyPressed = (label) => {
     if (this.state.currentOperand === "0" && label === "0") {
         this.setState({currentOperand: "0"});
@@ -156,32 +123,32 @@ class Calculator extends Component {
           <Display value={this.state.currentOperand} />
         </div>
         <div>
-          <NumericKey label={'7'} onClick={this.numericKeyPressed.bind(this, '7')}/>
-          <NumericKey label={'8'} onClick={this.numericKeyPressed.bind(this, '8')}/>
-          <NumericKey label={'9'} onClick={this.numericKeyPressed.bind(this, '9')}/>
-          <BinaryOperationKey label={'+'} onClick={this.binaryOperationKeyPressed.bind(this, '+')}/>
+          <Button label={'7'} onClick={() => {this.numericKeyPressed('7')}}/>
+          <Button label={'8'} onClick={() => {this.numericKeyPressed('8')}}/>
+          <Button label={'9'} onClick={() => {this.numericKeyPressed('9')}}/>
+          <Button label={'+'} onClick={() => {this.binaryOperationKeyPressed('+')}}/>
         </div>
         <div>
-          <NumericKey label={'4'} onClick={this.numericKeyPressed.bind(this, '4')}/>
-          <NumericKey label={'5'} onClick={this.numericKeyPressed.bind(this, '5')}/>
-          <NumericKey label={'6'} onClick={this.numericKeyPressed.bind(this, '6')}/>
-          <BinaryOperationKey label={'-'} onClick={this.binaryOperationKeyPressed.bind(this, '-')}/>
+          <Button label={'4'} onClick={() => {this.numericKeyPressed('4')}}/>
+          <Button label={'5'} onClick={() => {this.numericKeyPressed('5')}}/>
+          <Button label={'6'} onClick={() => {this.numericKeyPressed('6')}}/>
+          <Button label={'-'} onClick={() => {this.binaryOperationKeyPressed('-')}}/>
         </div>
         <div>
-          <NumericKey label={'1'} onClick={this.numericKeyPressed.bind(this, '1')}/>
-          <NumericKey label={'2'} onClick={this.numericKeyPressed.bind(this, '2')}/>
-          <NumericKey label={'3'} onClick={this.numericKeyPressed.bind(this, '3')}/>
-          <BinaryOperationKey label={'*'} onClick={this.binaryOperationKeyPressed.bind(this, '*')}/>
+          <Button label={'1'} onClick={() => {this.numericKeyPressed('1')}}/>
+          <Button label={'2'} onClick={() => {this.numericKeyPressed('2')}}/>
+          <Button label={'3'} onClick={() => {this.numericKeyPressed('3')}}/>
+          <Button label={'*'} onClick={() => {this.binaryOperationKeyPressed('*')}}/>
         </div>
         <div>
-          <NumericKey label={'.'} onClick={this.numericKeyPressed.bind(this, '.')}/>
-          <NumericKey label={'0'} onClick={this.numericKeyPressed.bind(this, '0')}/>
-          <UnaryOperationKey label={'%'} onClick={this.unaryOperationKeyPressed.bind(this, '%')}/>
-          <BinaryOperationKey label={'/'} onClick={this.binaryOperationKeyPressed.bind(this, '/')}/>
+          <Button label={'.'} onClick={() => {this.numericKeyPressed('.')}}/>
+          <Button label={'0'} onClick={() => {this.numericKeyPressed('0')}}/>
+          <Button label={'%'} onClick={() => {this.unaryOperationKeyPressed('%')}}/>
+          <Button label={'/'} onClick={() => {this.binaryOperationKeyPressed('/')}}/>
         </div>
         <div>
-          <CancelKey onClick={this.cancelKeyPressed}/>
-          <Equalkey onClick={this.equalKeyPressed}/>
+          <Button label={'C'} onClick={this.cancelKeyPressed}/>
+          <Button label={'='} onClick={this.equalKeyPressed}/>
         </div>
       </div>
 
