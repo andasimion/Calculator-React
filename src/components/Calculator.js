@@ -1,8 +1,11 @@
 
 import React, { Component } from 'react';
 import './Calculator.css';
-import { Button } from './Button';
 import { Display } from './Display';
+import { ButtonPanel } from './ButtonPanel';
+import {isNumericKey} from '../logic/isNumericKey';
+import {calculate} from '../logic/calculate';
+
 
 class Calculator extends Component {
   constructor(props) {
@@ -17,8 +20,26 @@ class Calculator extends Component {
 
     this.cancelKeyPressed = this.cancelKeyPressed.bind(this);
     this.equalKeyPressed = this.equalKeyPressed.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
-  
+
+  handleClick(buttonLabel, buttonType) {
+    switch (buttonType) {
+      case 'numeric': 
+        return this.numericKeyPressed(buttonLabel);
+      case 'binaryOperation':
+        return this.binaryOperationKeyPressed(buttonLabel);
+      case 'unaryOperation':
+        return this.unaryOperationKeyPressed(buttonLabel);
+      case 'equal':
+        return this.equalKeyPressed();
+      case 'cancel':
+        return this.cancelKeyPressed();
+      default:
+        return this.state;
+    }
+  };
+
   numericKeyPressed = (label) => {
     if (this.state.currentOperand === "0" && label === "0") {
         this.setState({currentOperand: "0"});
@@ -54,7 +75,7 @@ class Calculator extends Component {
       this.resetModel();
     } else if (this.state.lastKeyPressed === "=") {
       this.setState({currentOperation: label});
-    } else if (this.state.previousOperand !== null && this.isNumericKey(this.state.lastKeyPressed)) {
+    } else if (this.state.previousOperand !== null && isNumericKey(this.state.lastKeyPressed)) {
       this.equalKeyPressed();
       this.setState({currentOperation: label});
     } else {
@@ -63,14 +84,6 @@ class Calculator extends Component {
     };
     this.setState({lastKeyPressed: label});
   };
-
-  isNumericKey(key) {
-    const numericKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
-    return numericKeys.includes(key);
-  };
-
-  calculate = (operand1, operator, operand2) => eval(`${operand1}${operator}${operand2}`)
-  
  
   equalKeyPressed = () => {
     if (this.state.previousOperand === "ERROR") {
@@ -84,12 +97,12 @@ class Calculator extends Component {
         this.resetModel();
     } else if (this.state.lastKeyPressed === "=") {
         let temporarOperand = this.state.previousOperand;
-        this.setState({currentOperand: this.calculate(Number.parseFloat(this.state.currentOperand),
+        this.setState({currentOperand: calculate(Number.parseFloat(this.state.currentOperand),
                                        this.state.currentOperation,
                                        Number.parseFloat(temporarOperand))});
     } else {
         let temporarOperand = this.state.currentOperand;
-        this.setState({currentOperand: this.calculate(Number.parseFloat(this.state.previousOperand),
+        this.setState({currentOperand: calculate(Number.parseFloat(this.state.previousOperand),
                                                       this.state.currentOperation,
                                                       Number.parseFloat(this.state.currentOperand))});
         this.setState({previousOperand: temporarOperand});
@@ -97,13 +110,6 @@ class Calculator extends Component {
     };
     this.setState({lastKeyPressed: "="});
   };
-
-  resetModel = () => {
-    this.setState({
-      resetCurrentOperand: true,
-      lastKeyPressed: null
-    });
-  }
 
   cancelKeyPressed = () => {
     this.setState({
@@ -115,44 +121,20 @@ class Calculator extends Component {
     })
   };
 
+  resetModel = () => {
+    this.setState({
+      resetCurrentOperand: true,
+      lastKeyPressed: null
+    });
+  }
 
   render() {
     return (
-      <div className="container col-lg-8">
-        <div>
-          <Display value={this.state.currentOperand} />
-        </div>
-        <div>
-          <Button label={'7'} onClick={() => {this.numericKeyPressed('7')}}/>
-          <Button label={'8'} onClick={() => {this.numericKeyPressed('8')}}/>
-          <Button label={'9'} onClick={() => {this.numericKeyPressed('9')}}/>
-          <Button label={'+'} onClick={() => {this.binaryOperationKeyPressed('+')}}/>
-        </div>
-        <div>
-          <Button label={'4'} onClick={() => {this.numericKeyPressed('4')}}/>
-          <Button label={'5'} onClick={() => {this.numericKeyPressed('5')}}/>
-          <Button label={'6'} onClick={() => {this.numericKeyPressed('6')}}/>
-          <Button label={'-'} onClick={() => {this.binaryOperationKeyPressed('-')}}/>
-        </div>
-        <div>
-          <Button label={'1'} onClick={() => {this.numericKeyPressed('1')}}/>
-          <Button label={'2'} onClick={() => {this.numericKeyPressed('2')}}/>
-          <Button label={'3'} onClick={() => {this.numericKeyPressed('3')}}/>
-          <Button label={'*'} onClick={() => {this.binaryOperationKeyPressed('*')}}/>
-        </div>
-        <div>
-          <Button label={'.'} onClick={() => {this.numericKeyPressed('.')}}/>
-          <Button label={'0'} onClick={() => {this.numericKeyPressed('0')}}/>
-          <Button label={'%'} onClick={() => {this.unaryOperationKeyPressed('%')}}/>
-          <Button label={'/'} onClick={() => {this.binaryOperationKeyPressed('/')}}/>
-        </div>
-        <div>
-          <Button label={'C'} onClick={this.cancelKeyPressed}/>
-          <Button label={'='} onClick={this.equalKeyPressed}/>
-        </div>
+      <div className="container">
+        <Display value={this.state.currentOperand}/>
+        <ButtonPanel handleClick={this.handleClick}/>
       </div>
-
-    );
+    )
   }
 }
 
