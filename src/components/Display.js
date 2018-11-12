@@ -3,6 +3,6 @@ import React  from 'react';
 
 export const Display = (props) => {
     return (
-      <div className={props.DisplayStyle}>{props.value}</div>
+      <div className={props.displayStyle}>{props.value}</div>
     )
 }

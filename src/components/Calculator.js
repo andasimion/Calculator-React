@@ -40,12 +40,10 @@ class Calculator extends Component {
     this.setState({currentOperand: this.model.currentOperand});
   };
 
-  
-
   render() {
     return (
       <div className="container">
-        <Display DisplayStyle="calculator-display col-lg-12" value={this.state.currentOperand}/>
+        <Display displayStyle="display col-lg-12" value={this.state.currentOperand}/>
         <ButtonPanel handleButtonClick={this.handleButtonClick}/>
       </div>
     )
