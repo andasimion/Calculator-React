@@ -4,7 +4,7 @@ import React  from 'react';
 
 export const Button = (props)  => {
   return (
-    <button className={props.className} onClick={() => {props.handleClick(props.label, props.type)}} type={props.type}>{props.label}</button>
+    <button className={props.buttonWidth} onClick={() => {props.handleClick(props.label, props.type)}} type={props.type}>{props.label}</button>
   );
 }
 
