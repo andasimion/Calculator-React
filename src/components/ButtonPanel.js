@@ -6,7 +6,7 @@ export const ButtonPanel = (props) => {
     
 
     return (
-      <div className="container col-lg-12">
+      <div>
         <div>
           <Button buttonWidth="col-lg-3" label={'7'} type={'numeric'} handleClick={props.handleButtonClick}/>
           <Button buttonWidth="col-lg-3" label={'8'} type={'numeric'} handleClick={props.handleButtonClick}/>
@@ -21,7 +21,7 @@ export const ButtonPanel = (props) => {
         </div>
         <div>
           <Button buttonWidth="col-lg-3" label={'1'} type={'numeric'} handleClick={props.handleButtonClick}/>
-          <Button cbuttonWidth="col-lg-3" label={'2'} type={'numeric'} handleClick={props.handleButtonClick}/>
+          <Button buttonWidth="col-lg-3" label={'2'} type={'numeric'} handleClick={props.handleButtonClick}/>
           <Button buttonWidth="col-lg-3" label={'3'} type={'numeric'} handleClick={props.handleButtonClick}/>
           <Button buttonWidth="col-lg-3" label={'*'} type={'binaryOperation'} handleClick={props.handleButtonClick}/>
         </div>
@@ -33,7 +33,7 @@ export const ButtonPanel = (props) => {
         </div>
         <div>
           <Button buttonWidth="col-lg-6" label={'C'} type={'cancel'} handleClick={props.handleButtonClick}/>
-          <Button cbuttonWidth="col-lg-6" label={'='} type={'equal'} handleClick={props.handleButtonClick}/>
+          <Button buttonWidth="col-lg-6" label={'='} type={'equal'} handleClick={props.handleButtonClick}/>
         </div>
       </div>
     )

@@ -45,7 +45,7 @@ class Calculator extends Component {
   render() {
     return (
       <div className="container">
-        <Display value={this.state.currentOperand}/>
+        <Display DisplayStyle="calculator-display col-lg-12" value={this.state.currentOperand}/>
         <ButtonPanel handleButtonClick={this.handleButtonClick}/>
       </div>
     )
